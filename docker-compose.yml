@@ -17,6 +17,14 @@ services:
            - dnsmasq-server:dnsmasq-server
         networks:
            - localdevnet
+        ##################XDEBUG服务的远程调试需要配置下这里 更改为自己的主机IP
+        environment:
+           - XDEBUG_REMOTE_HOST=10.20.103.87
+           - XDEBUG_REMOTE_ENABLE=1
+           - XDEBUG_PROFILE_ENABLE=0
+           - XDEBUG_PROFILE_DIR=/data/__PHPDEBUG__
+           - XDEBUG_REMOTE_PORT=9001
+           - XDEBUG_IDE_KEY=XDEBUG_SESSION
     web-server-7.0:
             image: zhiqiangvip/docker-apache-php7.0
             expose:
@@ -38,6 +46,7 @@ services:
             environment:
                - XDEBUG_REMOTE_HOST=10.20.103.87
                - XDEBUG_REMOTE_ENABLE=1
+               - XDEBUG_PROFILE_ENABLE=0
                - XDEBUG_PROFILE_DIR=/data/__PHPDEBUG__
                - XDEBUG_REMOTE_PORT=9001
                - XDEBUG_IDE_KEY=XDEBUG_SESSION
