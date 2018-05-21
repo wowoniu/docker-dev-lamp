@@ -48,7 +48,7 @@ services:
         ports:
            - 3307:3306
         environment:
-           - MYSQL_PASS=kc123456
+           - MYSQL_PASS=123456
         volumes_from:
            - data-web-mysql
         networks:
