@@ -1,0 +1,133 @@
+version: "2"
+services: 
+    web-server:
+        image: zhiqiangvip/docker-apache-php5.5
+        expose:
+           - 80
+        ports:
+           - 9090:80
+        volumes_from:
+           - data-web-www
+        links:
+           - mysql-server:mysql-server
+           - mysql-server-5.6:mysql-server-5.6
+           - memcache-server:memcache-server
+           - rabbitmq-server:rabbitmq-server
+           - redis-server:redis-server
+           - dnsmasq-server:dnsmasq-server
+        networks:
+           - localdevnet
+    web-server-7.0:
+            image: zhiqiangvip/docker-apache-php7.0
+            expose:
+               - 80
+            ports:
+               - 9097:80
+            volumes_from:
+               - data-web-www
+            links:
+               - mysql-server:mysql-server
+               - mysql-server-5.6:mysql-server-5.6
+               - memcache-server:memcache-server
+               - rabbitmq-server:rabbitmq-server
+               - redis-server:redis-server
+               - dnsmasq-server:dnsmasq-server
+            networks:
+               - localdevnet
+            ##################XDEBUG服务的远程调试需要配置下这里 更改为自己的主机IP
+            environment:
+               - XDEBUG_REMOTE_HOST=10.20.103.87
+               - XDEBUG_REMOTE_ENABLE=1
+               - XDEBUG_PROFILE_DIR=/data/__PHPDEBUG__
+               - XDEBUG_REMOTE_PORT=9001
+               - XDEBUG_IDE_KEY=XDEBUG_SESSION
+    mysql-server:
+        image: zhiqiangvip/docker-mysql5.5
+        expose: 
+           - 3306
+        ports:
+           - 3307:3306
+        environment:
+           - MYSQL_PASS=kc123456
+        volumes_from:
+           - data-web-mysql
+        networks:
+           - localdevnet
+    mysql-server-5.6:
+            image: zhiqiangvip/docker-mysql5.6
+            expose:
+               - 3306
+            ports:
+               - 3308:3306
+            environment:
+               - MYSQL_PASS=123456
+            volumes_from:
+               - data-web-mysql-5.6
+            networks:
+               - localdevnet
+    memcache-server:
+        image: zhiqiangvip/docker-memcache
+        expose: 
+           - 11211
+        ports:  
+           - 11211:11211
+        volumes:
+           - /etc/localtime:/etc/localtime:ro
+        networks:
+           - localdevnet
+    redis-server:
+         image: zhiqiangvip/docker-redis
+         ports: 
+            - 6379:6379
+         expose:
+             - 6379
+         networks:
+             - localdevnet
+    rabbitmq-server:
+       image: zhiqiangvip/docker-rabbitmq
+       ports:
+           - 5672:5672
+           - 15672:15672
+       expose: 
+           - 5672
+           - 15672
+       networks:
+           - localdevnet
+    dnsmasq-server:
+       image:  zhiqiangvip/docker-dnsmasq
+       ports:
+            - 53:53/udp
+            - 8083:8080
+       #volumes:
+       #     - /home/qiang/vboxshare/server_data/dnsmasq/dnsmasq.conf:/etc/dnsmasq.conf
+       environment:
+            - HTTP_USER=qiang
+            - HTTP_PASS=kc123456
+       restart: always
+    ##############################注意：此处配置的是apache服务器的程序目录及日志目录
+    data-web-www:
+        image: zhiqiangvip/docker-ubuntu1404-163
+        volumes: 
+           - /home/qiang/vboxshare/server_data/web_www:/data
+           - /home/qiang/vboxshare/server_log/php_log:/var/log/php
+        networks:
+           - localdevnet
+    ##############################注意：此处配置的是mysql5.5服务器的数据库目录
+    data-web-mysql:
+        image: zhiqiangvip/docker-ubuntu1404-163
+        volumes:
+           - /home/qiang/vboxshare/server_data/mysql_db:/data
+           - /home/qiang/vboxshare/server_log/mysql_log:/var/log/mysql
+        networks:
+           - localdevnet
+    ##############################注意：此处配置的是mysql5.6服务器的数据库目录
+    data-web-mysql-5.6:
+        image: zhiqiangvip/docker-ubuntu1404-163
+        volumes:
+            - /home/qiang/vboxshare/server_log/mysql56_log:/var/log/mysql
+            - /home/qiang/vboxshare/server_data/mysql56_db:/data
+        networks:
+           - localdevnet
+networks:
+  localdevnet:
+    driver: bridge
