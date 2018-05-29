@@ -25,8 +25,8 @@ services:
            - XDEBUG_PROFILE_DIR=/data/__PHPDEBUG__
            - XDEBUG_REMOTE_PORT=9001
            - XDEBUG_IDE_KEY=XDEBUG_SESSION
-    web-server-7.0:
-            image: zhiqiangvip/docker-apache-php7.0
+    web-server-7.2:
+            image: zhiqiangvip/docker-apache-php7.2
             expose:
                - 80
             ports:
@@ -111,7 +111,7 @@ services:
        #     - /home/qiang/vboxshare/server_data/dnsmasq/dnsmasq.conf:/etc/dnsmasq.conf
        environment:
             - HTTP_USER=qiang
-            - HTTP_PASS=kc123456
+            - HTTP_PASS=123456
        restart: always
     ##############################注意：此处配置的是apache服务器的程序目录及日志目录
     data-web-www:
