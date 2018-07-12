@@ -12,7 +12,7 @@ services:
         volumes:
            - /home/ubuntu/app/docker_server/DOCKER_SERVER_CONF/apache/httpd-vhosts.conf:/usr/local/apache2/conf/extra/httpd-vhosts.conf
            - /home/ubuntu/app/docker_server/DOCKER_SERVER_CONF/apache/httpd.conf:/usr/local/apache2/conf/httpd.conf
-           - /home/ubuntu/app/docker_server/DOCKER_SERVER_CONF/apache/httpd-ssl.conf:/usr/local/apache2/conf/extra/httpd-ssl.conf
+           #- /home/ubuntu/app/docker_server/DOCKER_SERVER_CONF/apache/httpd-ssl.conf:/usr/local/apache2/conf/extra/httpd-ssl.conf
            #- /home/qiang/vboxshare/server_log/nginx_log:/var/log/nginx
         volumes_from:
            - data-web-www
