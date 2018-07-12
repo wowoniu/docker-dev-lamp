@@ -1,142 +1,66 @@
 version: "2"
 services: 
-    web-server:
-        image: zhiqiangvip/docker-apache-php5.5
+    apache-server:
+        image: httpd:2.4
         expose:
            - 80
+           - 443
+        ##################注意：端口为9090 可更改为 80######################
         ports:
-           - 9090:80
+           - 80:80
+           - 443:443
+        volumes:
+           - /app/docker_server/DOCKER_SERVER_CONF/apache/httpd-vhosts.conf:/usr/local/apache2/conf/extra/httpd-vhosts.conf
+           - /app/docker_server/DOCKER_SERVER_CONF/apache/httpd.conf:/usr/local/apache2/conf/httpd.conf
+           - /app/docker_server/DOCKER_SERVER_CONF/apache/httpd-ssl.conf:/usr/local/apache2/conf/extra/httpd-ssl.conf
+           #- /home/qiang/vboxshare/server_log/nginx_log:/var/log/nginx
         volumes_from:
            - data-web-www
         links:
-           - mysql-server:mysql-server
-           - mysql-server-5.6:mysql-server-5.6
-           - memcache-server:memcache-server
-           - rabbitmq-server:rabbitmq-server
-           - redis-server:redis-server
-           - dnsmasq-server:dnsmasq-server
-        networks:
-           - localdevnet
-        ##################XDEBUG服务的远程调试需要配置下这里 更改为自己的主机IP
-        environment:
-           - XDEBUG_REMOTE_HOST=10.20.103.87
-           - XDEBUG_REMOTE_ENABLE=1
-           - XDEBUG_PROFILE_ENABLE=0
-           - XDEBUG_PROFILE_DIR=/data/__PHPDEBUG__
-           - XDEBUG_REMOTE_PORT=9001
-           - XDEBUG_IDE_KEY=XDEBUG_SESSION
-    web-server-7.2:
-            image: zhiqiangvip/docker-apache-php7.2
-            expose:
-               - 80
-            ports:
-               - 9097:80
-            volumes_from:
-               - data-web-www
-            links:
-               - mysql-server:mysql-server
-               - mysql-server-5.6:mysql-server-5.6
-               - memcache-server:memcache-server
-               - rabbitmq-server:rabbitmq-server
-               - redis-server:redis-server
-               - dnsmasq-server:dnsmasq-server
-            networks:
-               - localdevnet
-            ##################XDEBUG服务的远程调试需要配置下这里 更改为自己的主机IP
-            environment:
-               - XDEBUG_REMOTE_HOST=10.20.103.87
-               - XDEBUG_REMOTE_ENABLE=1
-               - XDEBUG_PROFILE_ENABLE=0
-               - XDEBUG_PROFILE_DIR=/data/__PHPDEBUG__
-               - XDEBUG_REMOTE_PORT=9001
-               - XDEBUG_IDE_KEY=XDEBUG_SESSION
-    mysql-server:
-        image: zhiqiangvip/docker-mysql5.5
+           - phpfpm-server-7.0.30:phpfpm-server-70
+    phpfpm-server-7.0.30:
+        image: zhiqiangvip/docker-php-7.0.30-fpm
         expose: 
-           - 3306
-        ports:
-           - 3307:3306
-        environment:
-           - MYSQL_PASS=123456
+           - 9000
+        #   - 9566
+        #ports:
+        #   - 9566:9566
+        ##################PHP-FPM 配置文件######################
+        volumes: 
+           - /app/docker_server/DOCKER_SERVER_CONF/php7.0.30-fpm/php-fpm.conf:/usr/local/etc/php-fpm.conf
+           - /app/docker_server/DOCKER_SERVER_CONF/php7.0.30-fpm/www.conf:/usr/local/etc/php-fpm.d/www.conf
+           - /app/docker_server/DOCKER_SERVER_CONF/php7.0.30-fpm/php.ini:/usr/local/etc/php/conf.d/php.ini
         volumes_from:
-           - data-web-mysql
-        networks:
-           - localdevnet
+           - data-web-www
+        links:
+           - mysql-server-5.6:mysql-server-5.6
+           - redis-server:redis-server
     mysql-server-5.6:
             image: zhiqiangvip/docker-mysql5.6
             expose:
                - 3306
             ports:
-               - 3308:3306
+               - 3306:3306
             environment:
-               - MYSQL_PASS=123456
-            volumes_from:
-               - data-web-mysql-5.6
-            networks:
-               - localdevnet
-    memcache-server:
-        image: zhiqiangvip/docker-memcache
-        expose: 
-           - 11211
-        ports:  
-           - 11211:11211
-        volumes:
-           - /etc/localtime:/etc/localtime:ro
-        networks:
-           - localdevnet
+               - MYSQL_PASS=DAqvfG2FDUaVd5wv
+            #################配置数据库文件挂载目录######################
+            volumes:
+               - /app/docker_server_data/mysql56_db:/data
+               - /app/docker_server/DOCKER_SERVER_CONF/mysql56/extend.cnf:/etc/mysql/conf.d/extend.cnf
+               - /app/docker_server_data/mysql_log:/var/log/mysql
     redis-server:
-         image: zhiqiangvip/docker-redis
-         ports: 
-            - 6379:6379
-         expose:
-             - 6379
-         networks:
-             - localdevnet
-    rabbitmq-server:
-       image: zhiqiangvip/docker-rabbitmq
-       ports:
-           - 5672:5672
-           - 15672:15672
-       expose: 
-           - 5672
-           - 15672
-       networks:
-           - localdevnet
-    dnsmasq-server:
-       image:  zhiqiangvip/docker-dnsmasq
-       ports:
-            - 53:53/udp
-            - 8083:8080
-       #volumes:
-       #     - /home/qiang/vboxshare/server_data/dnsmasq/dnsmasq.conf:/etc/dnsmasq.conf
-       environment:
-            - HTTP_USER=qiang
-            - HTTP_PASS=123456
-       restart: always
-    ##############################注意：此处配置的是apache服务器的程序目录及日志目录
+            image: redis:3-alpine
+            volumes:
+               - /app/docker_server_data/redis_db:/data
+               - /app/docker_server/DOCKER_SERVER_CONF/redis3.2/redis.conf:/usr/local/etc/redis/redis.conf
+            command: redis-server /usr/local/etc/redis/redis.conf
+            expose:
+               - 6379
+            ports:
+               - 6377:6379
+
     data-web-www:
-        image: zhiqiangvip/docker-ubuntu1404-163
+        image: alpine
+        ###################配置网站www目录挂载目录######################
         volumes: 
-           - /home/qiang/vboxshare/server_data/web_www:/data
-           - /home/qiang/vboxshare/server_log/php_log:/var/log/php
-        networks:
-           - localdevnet
-    ##############################注意：此处配置的是mysql5.5服务器的数据库目录
-    data-web-mysql:
-        image: zhiqiangvip/docker-ubuntu1404-163
-        volumes:
-           - /home/qiang/vboxshare/server_data/mysql_db:/data
-           - /home/qiang/vboxshare/server_log/mysql_log:/var/log/mysql
-        networks:
-           - localdevnet
-    ##############################注意：此处配置的是mysql5.6服务器的数据库目录
-    data-web-mysql-5.6:
-        image: zhiqiangvip/docker-ubuntu1404-163
-        volumes:
-            - /home/qiang/vboxshare/server_log/mysql56_log:/var/log/mysql
-            - /home/qiang/vboxshare/server_data/mysql56_db:/data
-        networks:
-           - localdevnet
-networks:
-  localdevnet:
-    driver: bridge
+           - /app/docker_server_data/web_www:/data
