@@ -10,9 +10,9 @@ services:
            - 80:80
            - 443:443
         volumes:
-           - /app/docker_server/DOCKER_SERVER_CONF/apache/httpd-vhosts.conf:/usr/local/apache2/conf/extra/httpd-vhosts.conf
-           - /app/docker_server/DOCKER_SERVER_CONF/apache/httpd.conf:/usr/local/apache2/conf/httpd.conf
-           - /app/docker_server/DOCKER_SERVER_CONF/apache/httpd-ssl.conf:/usr/local/apache2/conf/extra/httpd-ssl.conf
+           - /home/ubuntu/app/docker_server/DOCKER_SERVER_CONF/apache/httpd-vhosts.conf:/usr/local/apache2/conf/extra/httpd-vhosts.conf
+           - /home/ubuntu/app/docker_server/DOCKER_SERVER_CONF/apache/httpd.conf:/usr/local/apache2/conf/httpd.conf
+           - /home/ubuntu/app/docker_server/DOCKER_SERVER_CONF/apache/httpd-ssl.conf:/usr/local/apache2/conf/extra/httpd-ssl.conf
            #- /home/qiang/vboxshare/server_log/nginx_log:/var/log/nginx
         volumes_from:
            - data-web-www
@@ -27,9 +27,9 @@ services:
         #   - 9566:9566
         ##################PHP-FPM 配置文件######################
         volumes: 
-           - /app/docker_server/DOCKER_SERVER_CONF/php7.0.30-fpm/php-fpm.conf:/usr/local/etc/php-fpm.conf
-           - /app/docker_server/DOCKER_SERVER_CONF/php7.0.30-fpm/www.conf:/usr/local/etc/php-fpm.d/www.conf
-           - /app/docker_server/DOCKER_SERVER_CONF/php7.0.30-fpm/php.ini:/usr/local/etc/php/conf.d/php.ini
+           - /home/ubuntu/app/docker_server/DOCKER_SERVER_CONF/php7.0.30-fpm/php-fpm.conf:/usr/local/etc/php-fpm.conf
+           - /home/ubuntu/app/docker_server/DOCKER_SERVER_CONF/php7.0.30-fpm/www.conf:/usr/local/etc/php-fpm.d/www.conf
+           - /home/ubuntu/app/docker_server/DOCKER_SERVER_CONF/php7.0.30-fpm/php.ini:/usr/local/etc/php/conf.d/php.ini
         volumes_from:
            - data-web-www
         links:
@@ -45,14 +45,14 @@ services:
                - MYSQL_PASS=DAqvfG2FDUaVd5wv
             #################配置数据库文件挂载目录######################
             volumes:
-               - /app/docker_server_data/mysql56_db:/data
-               - /app/docker_server/DOCKER_SERVER_CONF/mysql56/extend.cnf:/etc/mysql/conf.d/extend.cnf
-               - /app/docker_server_data/mysql_log:/var/log/mysql
+               - /home/ubuntu/app/docker_server_data/mysql56_db:/data
+               - /home/ubuntu/app/docker_server/DOCKER_SERVER_CONF/mysql56/extend.cnf:/etc/mysql/conf.d/extend.cnf
+               - /home/ubuntu/app/docker_server_data/mysql_log:/var/log/mysql
     redis-server:
             image: redis:3-alpine
             volumes:
-               - /app/docker_server_data/redis_db:/data
-               - /app/docker_server/DOCKER_SERVER_CONF/redis3.2/redis.conf:/usr/local/etc/redis/redis.conf
+               - /home/ubuntu/app/docker_server_data/redis_db:/data
+               - /home/ubuntu/app/docker_server/DOCKER_SERVER_CONF/redis3.2/redis.conf:/usr/local/etc/redis/redis.conf
             command: redis-server /usr/local/etc/redis/redis.conf
             expose:
                - 6379
@@ -63,4 +63,4 @@ services:
         image: alpine
         ###################配置网站www目录挂载目录######################
         volumes: 
-           - /app/docker_server_data/web_www:/data
+           - /home/ubuntu/app/docker_server_data/web_www:/data
